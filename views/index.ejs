@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Baldon Ore</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,100,300,500">
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+<!-- <link rel="stylesheet" href="/bootstrap/font-awesome/css/font-awesome.min.css"> -->
+
+    <!-- CSS Animation -->
+    <link rel="stylesheet" href="/bootstrap/css/animate.css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Javascript -->
+    <script src="/bootstrap/js/jquery-3.2.0.min.js"></script>
+    <script src="/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/bootstrap/js/jquery.backstretch.min.js"></script>
+
+
+    <!--Script per le notifiche -->
+    <script src="/bootstrap/js/bootstrap-notify.min.js"></script>
+
+    <!--Script per la select -->
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap-select.min.css">
+    <script src="/bootstrap/js/bootstrap-select.min.js"></script>
+
+
+    <script type="text/javascript" language="JavaScript">
+
+        $(document).ready(function () {
+            $('#bd').removeClass("loading");
+            $('#loading').hide();
+            $.ajax({
+                type: "POST",
+                url: "/dipendenti",
+                beforeSend: function () {
+                    $('#bd').addClass("loading");
+                },
+                complete: function () {
+                    $('#bd').removeClass("loading");
+                },
+                success: function (result) {
+                    var dipsjson = JSON.parse(result);
+                    if (dipsjson.length > 0) {
+                        for (i = 0; i < dipsjson.length; i++) {
+                            $('<option data-name="'+ dipsjson[i].dip + '" data-color="' + dipsjson[i].color + '">' +
+                                dipsjson[i].dip +
+                                '</option>').appendTo('#selectpicker');
+                        }
+                        $('#selectpicker').selectpicker('refresh');
+                    }
+                },
+                error: function () {
+                    $.notify({
+                        // options
+                        icon: 'glyphicon glyphicon-warning-sign',
+                        message: 'Errore Lista Dipendenti'.replace("&#39;", "\'"),
+                    }, {
+                        type: 'info',
+                        offset: 50,
+                        delay: 10,
+                        placement: {
+                            from: "bottom",
+                            align: "right"
+                        },
+                        animate: {
+                            enter: 'animated lightSpeedIn',
+                            exit: 'animated lightSpeedOut'
+                        },
+                    });
+                }
+            })
+            $('#insbutton').click(function () {
+                var dipsel = $('#selectpicker option:selected').data('name');
+                var dipcolor = $('#selectpicker option:selected').data('color');
+                if(dipsel == '') {
+                    $.notify({
+                        // options
+                        icon: 'glyphicon glyphicon-warning-sign',
+                        message: 'Selezionare Dipendente'.replace("&#39;", "\'"),
+                    }, {
+                        type: 'info',
+                        offset: 50,
+                        delay: 10,
+                        placement: {
+                            from: "bottom",
+                            align: "right"
+                        },
+                        animate: {
+                            enter: 'animated lightSpeedIn',
+                            exit: 'animated lightSpeedOut'
+                        },
+                    });
+                }
+                else {
+                    var check = true;
+                    if($('#commessa').val() == ""){
+                        check = false;
+                        $.notify({
+                            // options
+                            icon: 'glyphicon glyphicon-warning-sign',
+                            message: 'Inserire la commessa'.replace("&#39;", "\'"),
+                        }, {
+                            type: 'info',
+                            offset: 50,
+                            delay: 10,
+                            placement: {
+                                from: "bottom",
+                                align: "right"
+                            },
+                            animate: {
+                                enter: 'animated lightSpeedIn',
+                                exit: 'animated lightSpeedOut'
+                            },
+                        });
+                    }
+                    if($('#giorno').val() == "" || isNaN($('#giorno').val())){
+                        check = false;
+                        $.notify({
+                            // options
+                            icon: 'glyphicon glyphicon-warning-sign',
+                            message: 'Inserire il giorno'.replace("&#39;", "\'"),
+                        }, {
+                            type: 'info',
+                            offset: 50,
+                            delay: 10,
+                            placement: {
+                                from: "bottom",
+                                align: "right"
+                            },
+                            animate: {
+                                enter: 'animated lightSpeedIn',
+                                exit: 'animated lightSpeedOut'
+                            },
+                        });
+                    } else {
+                        if(parseInt($('#giorno').val()) <1 || parseInt($('#giorno').val()) > 31) {
+                            check = false;
+                            $.notify({
+                                // options
+                                icon: 'glyphicon glyphicon-warning-sign',
+                                message: 'Inserire giorno valido'.replace("&#39;", "\'"),
+                            }, {
+                                type: 'info',
+                                offset: 50,
+                                delay: 10,
+                                placement: {
+                                    from: "bottom",
+                                    align: "right"
+                                },
+                                animate: {
+                                    enter: 'animated lightSpeedIn',
+                                    exit: 'animated lightSpeedOut'
+                                },
+                            });
+                        }
+                    }
+                    if($('#mese').val() == "" || isNaN($('#mese').val())){
+                        check = false;
+                        $.notify({
+                            // options
+                            icon: 'glyphicon glyphicon-warning-sign',
+                            message: 'Inserire un mese'.replace("&#39;", "\'"),
+                        }, {
+                            type: 'info',
+                            offset: 50,
+                            delay: 10,
+                            placement: {
+                                from: "bottom",
+                                align: "right"
+                            },
+                            animate: {
+                                enter: 'animated lightSpeedIn',
+                                exit: 'animated lightSpeedOut'
+                            },
+                        });
+                    } else {
+                        if(parseInt($('#mese').val()) <1 || parseInt($('#mese').val() > 12)) {
+                            check = false;
+                            $.notify({
+                                // options
+                                icon: 'glyphicon glyphicon-warning-sign',
+                                message: 'Inserire mese valido'.replace("&#39;", "\'"),
+                            }, {
+                                type: 'info',
+                                offset: 50,
+                                delay: 10,
+                                placement: {
+                                    from: "bottom",
+                                    align: "right"
+                                },
+                                animate: {
+                                    enter: 'animated lightSpeedIn',
+                                    exit: 'animated lightSpeedOut'
+                                },
+                            });
+                        }
+                    }
+                    if($('#ore').val() == "" && isNaN($('#ore').val())){
+                        check = false;
+                        $.notify({
+                            // options
+                            icon: 'glyphicon glyphicon-warning-sign',
+                            message: 'Inserire ore valide'.replace("&#39;", "\'"),
+                        }, {
+                            type: 'info',
+                            offset: 50,
+                            delay: 10,
+                            placement: {
+                                from: "bottom",
+                                align: "right"
+                            },
+                            animate: {
+                                enter: 'animated lightSpeedIn',
+                                exit: 'animated lightSpeedOut'
+                            },
+                        });
+                    }
+                    if(check) {
+                        $.ajax({
+                            type: "POST",
+                            url: "/insert",
+                            beforeSend: function () {
+                                $('#bd').addClass("loading");
+                            },
+                            complete: function () {
+                                $('#bd').removeClass("loading");
+                            },
+                            data: "dip=" + dipsel + "&dipcolor=" + dipcolor + "&comm=" + $('#commessa').val() + "&ore=" + $('#ore').val() + "&giorno=" + $('#giorno').val() + "&mese=" + $('#mese').val(),
+                            dataType: "html",
+                            success: function (msg) {
+                                $.notify({
+                                    // options
+                                    icon: 'glyphicon glyphicon-warning-sign',
+                                    message: msg.replace("&#39;", "\'"),
+                                }, {
+                                    type: 'info',
+                                    offset: 50,
+                                    delay: 10,
+                                    placement: {
+                                        from: "bottom",
+                                        align: "right"
+                                    },
+                                    animate: {
+                                        enter: 'animated lightSpeedIn',
+                                        exit: 'animated lightSpeedOut'
+                                    },
+                                });
+                            },
+                            error: function () {
+                                $.notify({
+                                    // options
+                                    icon: 'glyphicon glyphicon-warning-sign',
+                                    message: 'Errore'.replace("&#39;", "\'"),
+                                }, {
+                                    type: 'info',
+                                    offset: 50,
+                                    delay: 10,
+                                    placement: {
+                                        from: "bottom",
+                                        align: "right"
+                                    },
+                                    animate: {
+                                        enter: 'animated lightSpeedIn',
+                                        exit: 'animated lightSpeedOut'
+                                    },
+                                });
+                            }
+                        });
+                    }
+                }
+            });
+        });
+
+    </script>
+
+    <style>
+        .nopadding {
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        hr {
+            height: 1px;
+            color: grey;
+            background-color: grey;
+            border: none;
+        }
+
+        .panel-empty {
+            margin-top: 15%;
+            border: 0px solid #FFFFFF;
+            -webkit-box-shadow: 0 0px 0px rgba(0, 0, 0, 0);
+            box-shadow: 0 0px 0px rgba(0, 0, 0, 0);
+        }
+
+        .panel-empty .panel-heading {
+            border: 0px solid #FFFFFF;
+            -webkit-box-shadow: 0 0px 0px rgba(0, 0, 0, 0);
+            box-shadow: 0 0px 0px rgba(0, 0, 0, 0);
+        }
+
+        .vertical-center {
+            min-height: 100%; /* Fallback for browsers do NOT support vh unit */
+            min-height: 100vh; /* These two lines are counted as one :-)       */
+            background-color: white;
+            display: flex;
+            align-items: center;
+        }
+
+        #modalloading {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background: rgba(255, 255, 255, .8) url('/images/loading_gif.gif') 50% 50% no-repeat;
+        }
+
+        /* When the body has the loading class, we turn
+           the scrollbar off with overflow:hidden */
+        body.loading {
+            overflow: hidden;
+        }
+
+        /* Anytime the body has the loading class, our
+           modal element will be visible */
+        body.loading #modalloading {
+            display: block;
+        }
+    </style>
+
+</head>
+
+<body id="bd">
+
+<!-- Top content -->
+<div class="container">
+    <div class="row text-center">
+        <h1 style="margin-top: 50px;"></h1>
+        <img src="images/logobaldon.png" class="img-responsive center-block" alt="">
+    </div>
+    <div class="row">
+        <div class="col-xs-8 col-sm-8 col-md-6 col-xs-offset-2 col-sm-offset-2 col-md-offset-3">
+            <div class="panel panel-empty" style="margin-top:30px;border:0px;">
+                <div class="panel-body text-center" style="padding-top:0px;border:0px;">
+                    <h1 style="margin-top: 10px;"></h1>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6 col-md-6">
+                            <div class="form-group">
+                            <select class="selectpicker" id="selectpicker" data-width="100%"
+                                    title="DIPENDENTE">
+                            </select></h5>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-6">
+                            <div class="form-group">
+                                <input type="text" name="commesse" maxlength="30" id="commessa"
+                                       class="form-control input-md"
+                                       placeholder="Commessa">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <h1></h1>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6 col-md-6">
+                            <div class="form-group">
+                                <input type="text" name="ore" maxlength="30" id="ore"
+                                       class="form-control input-md"
+                                       placeholder="Ore">
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-6">
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                            <div>
+                                <input type="text" name="giorno" maxlength="30" id="giorno"
+                                       class="form-control input-md"
+                                       placeholder="Giorno">
+                            </div>
+                            </div>
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <div class="form-group" style="padding:0px;border:0px;">
+                                    <input type="text" name="mese" maxlength="30" id="mese"
+                                           class="form-control input-md"
+                                           placeholder="Mese">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-link btn-lg" tabindex="3" id="insbutton"
+                            style="color:red">Inserisci
+                    </button>
+                </div>
+            </div>
+         </div>
+    </div>
+</div>
+
+<div class="modal" id="modalloading"><!-- Place at bottom of page --></div>
+</body>
+
+</html>
